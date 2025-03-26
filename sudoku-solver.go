@@ -31,8 +31,30 @@ func makeSudoku(input []byte) [][]int {
 }
 
 func solve(sudoku [][]int) [][]int {
-	solution := make([][]int, 9)
+	solution, _ := solveRecursively(sudoku, 0, 0)
 	return solution
+}
+
+func solveRecursively(sudoku [][]int, row int, col int) ([][]int, bool) {
+	if row == len(sudoku) - 1 && col == len(sudoku[0]) - 1 {
+		return sudoku, true
+	} else {
+		for n := 1; n <= 9; n++{
+			if (legal(sudoku, row, col, n)) {
+				sudoku[row][col] = n
+				if (row < len(sudoku) - 1) {
+					return solveRecursively(sudoku, row + 1, col)
+				} else {
+					return solveRecursively(sudoku, 0, col + 1)
+				}
+			}
+		}
+		return sudoku, false
+	}
+}
+
+func legal(sudoku[][]int, row int, col int, n int) bool {
+	return true
 }
 
 func main() {
@@ -40,13 +62,7 @@ func main() {
 	check(err)
 
 	sudoku := makeSudoku(input)
-
-	for _, row := range sudoku {
-		fmt.Println(row)
-	}
-
 	solution := solve(sudoku)
-
 	for _, row := range solution {
 		fmt.Println(row)
 	}
