@@ -26,9 +26,9 @@ func main() {
 		sudokuBoard[i] = make([]int, 9)
 		for j, char := range line {
 
-			convertedNumber, err := strconv.Atoi(string(char))
+			number, err := strconv.Atoi(string(char))
 			check(err)
-			sudokuBoard[i][j] = convertedNumber
+			sudokuBoard[i][j] = number
 		}
 	}
 
