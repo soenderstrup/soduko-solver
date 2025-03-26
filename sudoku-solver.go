@@ -36,7 +36,7 @@ func solve(sudoku [][]int) [][]int {
 }
 
 func solveRecursively(sudoku [][]int, row int, col int) ([][]int, bool) {
-	if row == len(sudoku) - 1 && col == len(sudoku[0]) - 1 {
+	if col == len(sudoku[0]) {
 		return sudoku, true
 	} else {
 		for n := 1; n <= 9; n++{
