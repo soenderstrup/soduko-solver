@@ -13,26 +13,41 @@ func check(err error) {
 	}
 }
 
+func makeSudoku(input []byte) [][]int {
+	lines := strings.Split(strings.TrimSpace(string(input)), "\n") 
+
+	sudoku := make([][]int, 9)
+
+	for i, line := range lines {
+		line = strings.TrimSpace(line)
+		sudoku[i] = make([]int, 9)
+		for j, char := range line {
+			number, err := strconv.Atoi(string(char))
+			check(err)
+			sudoku[i][j] = number
+		}
+	}
+	return sudoku
+}
+
+func solve(sudoku [][]int) [][]int {
+	solution := make([][]int, 9)
+	return solution
+}
+
 func main() {
 	input, err := os.ReadFile("input.txt")
 	check(err)
 
-	lines := strings.Split(strings.TrimSpace(string(input)), "\n") 
+	sudoku := makeSudoku(input)
 
-	sudokuBoard := make([][]int, 9)
-
-	for i, line := range lines {
-		line = strings.TrimSpace(line)
-		sudokuBoard[i] = make([]int, 9)
-		for j, char := range line {
-
-			number, err := strconv.Atoi(string(char))
-			check(err)
-			sudokuBoard[i][j] = number
-		}
+	for _, row := range sudoku {
+		fmt.Println(row)
 	}
 
-	for _, row := range sudokuBoard {
+	solution := solve(sudoku)
+
+	for _, row := range solution {
 		fmt.Println(row)
 	}
 }
