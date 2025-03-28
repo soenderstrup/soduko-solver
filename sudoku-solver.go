@@ -36,32 +36,51 @@ func solve(sudoku [][]int) [][]int {
 }
 
 func solveRecursively(sudoku [][]int, row int, col int) [][]int {
+	fmt.Println(row, col)
 	if col == len(sudoku[0]) {
+		fmt.Println("done")
 		return sudoku
 	} else {
-		nextRow := row
-		nextCol := col
-		if row < len(sudoku) - 1 {
-			nextRow++
-		} else {
-			nextRow = 0
-			nextCol++
-		}
+		nextRow, nextCol := getNextCell(sudoku, row, col)
 		if sudoku[row][col] != 0 {
 			return solveRecursively(sudoku, nextRow, nextCol)
 		}
 		for n := 1; n <= 9; n++{
-			if legal(sudoku, row, col, n) {
+			if valid(sudoku, row, col, n) {
 				sudoku[row][col] = n
 				return solveRecursively(sudoku, nextRow, nextCol)
 			}
 		}
+		fmt.Println("could not solve")
 		return sudoku
 	}
 }
 
-func legal(sudoku[][]int, row int, col int, n int) bool {
+func getNextCell(sudoku [][]int, row int, col int) (int, int) {
+	nextRow := row
+	nextCol := col
+	if row < len(sudoku) - 1 {
+		nextRow++
+	} else {
+		nextRow = 0
+		nextCol++
+	}
+	return nextRow, nextCol
+}
+
+func valid(sudoku [][]int, row int, col int, n int) bool {
+	for i := range len(sudoku) - 1 {
+		if n == sudoku[i][col] || n == sudoku[row][i] {
+			return false
+		}
+	}
 	return true
+}
+
+func printSudoku(sudoku [][]int) {
+	for _, row := range sudoku {
+		fmt.Println(row)
+	}
 }
 
 func main() {
@@ -69,8 +88,7 @@ func main() {
 	check(err)
 
 	sudoku := makeSudoku(input)
+	printSudoku(sudoku)
 	solution := solve(sudoku)
-	for _, row := range solution {
-		fmt.Println(row)
-	}
+	printSudoku(solution)
 }
