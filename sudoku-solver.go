@@ -31,25 +31,32 @@ func makeSudoku(input []byte) [][]int {
 }
 
 func solve(sudoku [][]int) [][]int {
-	solution, _ := solveRecursively(sudoku, 0, 0)
+	solution := solveRecursively(sudoku, 0, 0)
 	return solution
 }
 
-func solveRecursively(sudoku [][]int, row int, col int) ([][]int, bool) {
+func solveRecursively(sudoku [][]int, row int, col int) [][]int {
 	if col == len(sudoku[0]) {
-		return sudoku, true
+		return sudoku
 	} else {
+		nextRow := row
+		nextCol := col
+		if row < len(sudoku) - 1 {
+			nextRow++
+		} else {
+			nextRow = 0
+			nextCol++
+		}
+		if sudoku[row][col] != 0 {
+			return solveRecursively(sudoku, nextRow, nextCol)
+		}
 		for n := 1; n <= 9; n++{
-			if (legal(sudoku, row, col, n)) {
+			if legal(sudoku, row, col, n) {
 				sudoku[row][col] = n
-				if (row < len(sudoku) - 1) {
-					return solveRecursively(sudoku, row + 1, col)
-				} else {
-					return solveRecursively(sudoku, 0, col + 1)
-				}
+				return solveRecursively(sudoku, nextRow, nextCol)
 			}
 		}
-		return sudoku, false
+		return sudoku
 	}
 }
 
