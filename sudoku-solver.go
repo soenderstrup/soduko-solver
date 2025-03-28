@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"math"
 	"os"
 	"strconv"
 	"strings"
@@ -30,29 +31,27 @@ func makeSudoku(input []byte) [][]int {
 	return sudoku
 }
 
-func solve(sudoku [][]int) [][]int {
-	solution := solveRecursively(sudoku, 0, 0)
-	return solution
+func solve(sudoku [][]int) {
+	solveRecursively(sudoku, 0, 0)
 }
 
-func solveRecursively(sudoku [][]int, row int, col int) [][]int {
-	fmt.Println(row, col)
+func solveRecursively(sudoku [][]int, row int, col int) {
 	if col == len(sudoku[0]) {
-		fmt.Println("done")
-		return sudoku
+		printSudoku(sudoku)
+		
 	} else {
 		nextRow, nextCol := getNextCell(sudoku, row, col)
 		if sudoku[row][col] != 0 {
-			return solveRecursively(sudoku, nextRow, nextCol)
-		}
-		for n := 1; n <= 9; n++{
-			if valid(sudoku, row, col, n) {
-				sudoku[row][col] = n
-				return solveRecursively(sudoku, nextRow, nextCol)
+			solveRecursively(sudoku, nextRow, nextCol)
+		} else {
+			for n := 1; n <= 9; n++{
+				if valid(sudoku, row, col, n) {
+					sudoku[row][col] = n
+					solveRecursively(sudoku, nextRow, nextCol)
+					sudoku[row][col] = 0
+				}
 			}
 		}
-		fmt.Println("could not solve")
-		return sudoku
 	}
 }
 
@@ -74,6 +73,18 @@ func valid(sudoku [][]int, row int, col int, n int) bool {
 			return false
 		}
 	}
+	quadrantRow := int(math.Floor(float64(row) / 3) * 3)
+	quadrantCol := int(math.Floor(float64(col) / 3) * 3)
+	for i := quadrantRow; i < quadrantRow + 3; i++ {
+		for j := quadrantCol; j < quadrantCol + 3; j++ {
+			if i == row && j == col {
+				continue
+			}
+			if n == sudoku[i][j] {
+				return false
+			}
+		}
+	}
 	return true
 }
 
@@ -89,6 +100,6 @@ func main() {
 
 	sudoku := makeSudoku(input)
 	printSudoku(sudoku)
-	solution := solve(sudoku)
-	printSudoku(solution)
+	fmt.Println("")
+	solve(sudoku)
 }
