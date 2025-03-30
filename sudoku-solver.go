@@ -31,27 +31,38 @@ func makeSudoku(input []byte) [][]int {
 	return sudoku
 }
 
-func solve(sudoku [][]int) {
-	solveRecursively(sudoku, 0, 0)
+func solve(sudoku [][]int) [][]int {
+	sudokuCopy := make([][]int, 9) // avoid side effects
+	for i, row := range sudoku {
+		sudokuCopy[i] = make([]int, 9)
+		copy(sudokuCopy[i], row)
+	}
+	if solveRecursively(sudokuCopy, 0, 0) {
+		return sudokuCopy
+	} else {
+		return nil
+	}
 }
 
-func solveRecursively(sudoku [][]int, row int, col int) {
+func solveRecursively(sudoku [][]int, row int, col int) bool {
 	if col == len(sudoku[0]) {
-		printSudoku(sudoku)
-		
+		return true
 	} else {
 		nextRow, nextCol := getNextCell(sudoku, row, col)
 		if sudoku[row][col] != 0 {
-			solveRecursively(sudoku, nextRow, nextCol)
+			return solveRecursively(sudoku, nextRow, nextCol)
 		} else {
 			for n := 1; n <= 9; n++{
 				if valid(sudoku, row, col, n) {
 					sudoku[row][col] = n
-					solveRecursively(sudoku, nextRow, nextCol)
+					if solveRecursively(sudoku, nextRow, nextCol) {
+						return true
+					}
 					sudoku[row][col] = 0
 				}
 			}
 		}
+		return false
 	}
 }
 
@@ -101,5 +112,10 @@ func main() {
 	sudoku := makeSudoku(input)
 	printSudoku(sudoku)
 	fmt.Println("")
-	solve(sudoku)
+	solution := solve(sudoku)
+	if solution != nil {
+		printSudoku(solution)
+	} else {
+		fmt.Println("Solution not found.")
+	}
 }
