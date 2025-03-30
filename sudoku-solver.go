@@ -8,28 +8,6 @@ import (
 	"strings"
 ) 
 
-func check(err error) {
-	if (err != nil) {
-		panic(err)
-	}
-}
-
-func makeSudoku(input []byte) [][]int {
-	lines := strings.Split(strings.TrimSpace(string(input)), "\n") 
-
-	sudoku := make([][]int, 9)
-
-	for i, line := range lines {
-		line = strings.TrimSpace(line)
-		sudoku[i] = make([]int, 9)
-		for j, char := range line {
-			number, err := strconv.Atoi(string(char))
-			check(err)
-			sudoku[i][j] = number
-		}
-	}
-	return sudoku
-}
 
 func solve(sudoku [][]int) [][]int {
 	sudokuCopy := make([][]int, 9) // avoid side effects
@@ -79,8 +57,24 @@ func getNextCell(sudoku [][]int, row int, col int) (int, int) {
 }
 
 func valid(sudoku [][]int, row int, col int, n int) bool {
-	for i := range len(sudoku) - 1 {
-		if n == sudoku[i][col] || n == sudoku[row][i] {
+	// I had to change this to make this function work to validate solutions. 
+	// Not optimal...
+	// for i := range len(sudoku) - 1 {
+	// 	if n == sudoku[i][col] || n == sudoku[row][i] {
+	// 		return false
+	// 	}
+	// }
+	for i := range sudoku {
+		if (i == col) {
+			continue
+		} else if n == sudoku[row][i] {
+			return false
+		}
+	}
+	for i := range sudoku {
+		if (i == row) {
+			continue
+		} else if n == sudoku[i][col] {
 			return false
 		}
 	}
@@ -90,8 +84,21 @@ func valid(sudoku [][]int, row int, col int, n int) bool {
 		for j := quadrantCol; j < quadrantCol + 3; j++ {
 			if i == row && j == col {
 				continue
+			} else if n == sudoku[i][j] {
+				return false
 			}
-			if n == sudoku[i][j] {
+		}
+	}
+	return true
+}
+
+func validateSudoku(sudoku [][]int) bool {
+	if sudoku == nil {
+		return false
+	}
+	for i, row := range sudoku {
+		for j, n := range row {
+			if !valid(sudoku, i, j, n) {
 				return false
 			}
 		}
@@ -105,6 +112,62 @@ func printSudoku(sudoku [][]int) {
 	}
 }
 
+func format2DSlice(slice [][]int) string {
+	var sb strings.Builder
+	for _, row := range slice {
+		sb.WriteString("[ ")
+		for _, n := range row {
+			sb.WriteString(fmt.Sprintf("%d ", n))
+		}
+		sb.WriteString("]\n")
+	}
+	return sb.String()
+}
+
+func check(err error) {
+	if (err != nil) {
+		panic(err)
+	}
+}
+
+func makeSudoku(input []byte) [][]int {
+	lines := strings.Split(strings.TrimSpace(string(input)), "\n") 
+
+	sudoku := make([][]int, 9)
+
+	for i, line := range lines {
+		line = strings.TrimSpace(line)
+		sudoku[i] = make([]int, 9)
+		for j, char := range line {
+			number, err := strconv.Atoi(string(char))
+			check(err)
+			sudoku[i][j] = number
+		}
+	}
+	return sudoku
+}
+
+func makeSudokus(input []byte) [][][]int {
+	puzzles := strings.Split(strings.TrimSpace(strings.ReplaceAll(string(input), "\r", "")), "\n\n")
+	sudokus := make([][][]int, len(puzzles))
+
+	for p, puzzle := range puzzles {
+		lines := strings.Split(strings.TrimSpace(puzzle), "\n")
+		sudoku := make([][]int, 9)
+		for i, line := range lines {
+			line = strings.TrimSpace(line)
+			sudoku[i] = make([]int, 9)
+			for j, char := range line {
+				number, err := strconv.Atoi(string(char))
+				check(err)
+				sudoku[i][j] = number
+			}
+		}
+		sudokus[p] = sudoku
+	}
+
+	return sudokus
+}
 func main() {
 	input, err := os.ReadFile("input.txt")
 	check(err)
@@ -115,6 +178,7 @@ func main() {
 	solution := solve(sudoku)
 	if solution != nil {
 		printSudoku(solution)
+		fmt.Println(validateSudoku(solution))
 	} else {
 		fmt.Println("Solution not found.")
 	}
