@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"math"
-	"os"
 	"strconv"
 	"strings"
 ) 
@@ -167,19 +166,4 @@ func makeSudokus(input []byte) [][][]int {
 	}
 
 	return sudokus
-}
-func main() {
-	input, err := os.ReadFile("input.txt")
-	check(err)
-
-	sudoku := makeSudoku(input)
-	printSudoku(sudoku)
-	fmt.Println("")
-	solution := solve(sudoku)
-	if solution != nil {
-		printSudoku(solution)
-		fmt.Println(validateSudoku(solution))
-	} else {
-		fmt.Println("Solution not found.")
-	}
 }
