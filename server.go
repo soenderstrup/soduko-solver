@@ -12,18 +12,23 @@ func hello(w http.ResponseWriter, req *http.Request) {
 
 func solveSudoku(w http.ResponseWriter, req *http.Request) {
 	decoder := json.NewDecoder(req.Body)
-	var data map[string]any
-	err := decoder.Decode(&data)
-	if err != nil {
-		panic(err)
+	var data struct {
+		Sudoku [][]int `json:"sudoku"`
 	}
-	fmt.Println(data)
-	fmt.Fprintf(w, "hello")
+	err := decoder.Decode(&data)
+	if err != nil || data.Sudoku == nil || len(data.Sudoku) != 9 {
+        http.Error(w, "Invalid input", http.StatusBadRequest)
+        return
+    }
+	solution := solve(data.Sudoku)
+	json.NewEncoder(w).Encode(solution)
 }
 
 func main() {
 	http.HandleFunc("/", hello)
 	http.HandleFunc("/solve", solveSudoku)
+	PORT := "3000"
 
-	http.ListenAndServe(":8000", nil)
+	fmt.Println("Server listening on: " + PORT)
+	http.ListenAndServe("127.0.0.1:" + PORT, nil)
 }

@@ -129,8 +129,8 @@ func check(err error) {
 	}
 }
 
-func makeSudoku(input []byte) [][]int {
-	lines := strings.Split(strings.TrimSpace(string(input)), "\n") 
+func makeSudoku(input string) [][]int {
+	lines := strings.Split(strings.TrimSpace(input), " ") 
 
 	sudoku := make([][]int, 9)
 
